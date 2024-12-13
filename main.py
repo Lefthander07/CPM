@@ -1,9 +1,7 @@
-import typing
-import
-
+from typing import List, Dict, Optional
 
 class Node:
-    def __init__(self, activity: float, durations: float, predecessors: tuple) -> None:
+    def __init__(self, activity: int, durations: float, predecessors: tuple) -> None:
         self.activity = activity
         self.durations = durations
         self.predecessors = predecessors
@@ -12,29 +10,29 @@ class Node:
         self.__LateStart =  None
         self.__LateFinish = None
 
-    def setES(self, ES: float) -> None:
-        self.__EarlyStart = ES
+    def set_es(self, es: float) -> None:
+        self.__EarlyStart = es
         self.EarlyFinish = self.EarlyStart + self.durations
-    def setEF(self, EF: float) -> None:
-        self.__EarlyFinish = EF
-    def setLS(self, LS: float) -> None:
-        self.__LateStart = LS
-    def setLF(self, LF: float) -> None:
-        self.__EarlyStart = LF
+    def set_ef(self, ef: float) -> None:
+        self.__EarlyFinish = ef
+    def set_ls(self, ls: float) -> None:
+        self.__LateStart = ls
+    def set_lf(self, lf: float) -> None:
+        self.__EarlyStart = lf
 
-    def getES(self) -> float:
+    def get_es(self) -> float:
         return self.__EarlyStart
-    def getEF(self) -> float:
+    def get_ef(self) -> float:
         return self.__EarlyFinish
-    def getLS(self) -> float:
+    def get_ls(self) -> float:
         return self.__LateStart
-    def getLF(self) -> float:
+    def get_lf(self) -> float:
         return self.__EarlyStart
 
-    EarlyStart = property(getES, setES)
-    EarlyFinish = property(getEF, setEF)
-    LateStart = property(getLS, setLS)
-    LateFinish = property(getLF, setLF)
+    EarlyStart = property(get_es, set_es)
+    EarlyFinish = property(get_ef, set_ef)
+    LateStart = property(get_ls, set_ls)
+    LateFinish = property(get_lf, set_lf)
 
 
 if __name__ == "__main__":
@@ -43,12 +41,21 @@ if __name__ == "__main__":
 
 class ProjectNetwork:
     def __init__(self, ):
-        pass
+        self.nodes: Dict[int, Node] = {}
+        self.end_node_number = None
+
+    def add_node(self, node: Node) -> None:
+        if not isinstance(node, Node):
+            raise TypeError("node must be an instance of the Node class")
+        node_number = node.activity
+        if node_number in self.nodes:
+            raise ValueError(f"Node with number {node_number} already exists.")
+
+        self.nodes[node_number] = node
+
     def calculate_early_start_and_finish(self) -> None:
         pass
     def calculate_late_start_and_finish(self) -> None:
-        pass
-    def add_node(self, node: Node) -> None:
         pass
     def find_critical_path(self) -> Node:
         pass
