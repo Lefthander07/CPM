@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 
+
 class Node:
     def __init__(self, activity: int, durations: float, predecessors: tuple) -> None:
         self.activity = activity
@@ -7,24 +8,30 @@ class Node:
         self.predecessors = predecessors
         self.__EarlyStart = None
         self.__EarlyFinish = None
-        self.__LateStart =  None
+        self.__LateStart = None
         self.__LateFinish = None
 
     def set_es(self, es: float) -> None:
         self.__EarlyStart = es
+
     def set_ef(self, ef: float) -> None:
         self.__EarlyFinish = ef
+
     def set_ls(self, ls: float) -> None:
         self.__LateStart = ls
+
     def set_lf(self, lf: float) -> None:
         self.__LateFinish = lf
 
     def get_es(self) -> float:
         return self.__EarlyStart
+
     def get_ef(self) -> float:
         return self.__EarlyFinish
+
     def get_ls(self) -> float:
         return self.__LateStart
+
     def get_lf(self) -> float:
         return self.__LateFinish
 
@@ -78,9 +85,14 @@ class ProjectNetwork:
 
     def calculate_late_start_and_finish(self) -> None:
         end_node = self.nodes[self.end_node_number]
-
         end_node.set_lf(end_node.get_ef())
         end_node.set_ls(end_node.get_lf() - end_node.durations)
+
+        # Установим поздние старты и окончания для узлов без преемников
+        for node in self.nodes.values():
+            if len(self.successors(node)) == 0:
+                node.set_lf(node.get_ef())
+                node.set_ls(node.get_lf() - node.durations)
 
         updated = True
         while updated:
@@ -109,18 +121,11 @@ class ProjectNetwork:
                 successors.append(other_node)
         return successors
 
-    def find_critical_path(self) -> List[Node]:
+    def find_critical_path(self) -> List[int]:
         critical_path = []
-        current_node = self.nodes[self.end_node_number]
-        while current_node is not None:
-            critical_path.insert(0, current_node.activity)
-            if len(current_node.predecessors) > 0:
-                for predecessor in current_node.predecessors:
-                    if self.nodes[predecessor].get_ef() == current_node.get_ls():
-                        current_node = self.nodes[predecessor]
-                        break
-            else:
-                current_node = None
+        for node in self.nodes.values():
+            if node.get_es() == node.get_ls():
+                critical_path.append(node.activity)
         return critical_path
 
     def get_cp_duration(self, cp: List[int]) -> float:
@@ -131,27 +136,28 @@ class ProjectNetwork:
 
     def print(self) -> None:
         for node in self.nodes.values():
-            print(f"№{node.activity}, ES = {node.EarlyStart}, EF = {node.EarlyFinish}, LS = {node.LateStart}, LF={node.LateFinish}")
+            print(
+                f"№{node.activity}, ES = {node.EarlyStart}, EF = {node.EarlyFinish}, LS = {node.LateStart}, LF={node.LateFinish}")
+
 
 if __name__ == "__main__":
-    A = Node(1, 5, {})
-    B = Node(2, 6, {1})
-    C = Node(3, 3, {1})
-    D = Node(4, 4, {2})
-    E = Node(5, 2, {2, 3})
-    F = Node(6, 1, {4, 5})
-
+    Nodes = [
+        Node(1, 3, []),
+        Node(2, 4, [1]),
+        Node(3, 2, [1]),
+        Node(4, 5, [2]),
+        Node(5, 1, [3]),
+        Node(6, 2, [3]),
+        Node(7, 4, [4, 5]),
+        Node(8, 3, [6, 7])
+    ]
     project = ProjectNetwork()
-
-    project.add_node(A)
-    project.add_node(B)
-    project.add_node(C)
-    project.add_node(D)
-    project.add_node(E)
-    project.add_node(F)
+    for node in Nodes:
+        project.add_node(node)
 
     project.calculate_early_start_and_finish()
     project.calculate_late_start_and_finish()
+    project.print()
     cp = project.find_critical_path()
     duration_cp = project.get_cp_duration(cp)
     print(cp)
