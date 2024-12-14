@@ -139,26 +139,26 @@ class ProjectNetwork:
             print(
                 f"№{node.activity}, ES = {node.EarlyStart}, EF = {node.EarlyFinish}, LS = {node.LateStart}, LF={node.LateFinish}")
 
-
-if __name__ == "__main__":
-    Nodes = [
-        Node(1, 3, []),
-        Node(2, 4, [1]),
-        Node(3, 2, [1]),
-        Node(4, 5, [2]),
-        Node(5, 1, [3]),
-        Node(6, 2, [3]),
-        Node(7, 4, [4, 5]),
-        Node(8, 3, [6, 7])
-    ]
-    project = ProjectNetwork()
-    for node in Nodes:
-        project.add_node(node)
-
-    project.calculate_early_start_and_finish()
-    project.calculate_late_start_and_finish()
-    project.print()
-    cp = project.find_critical_path()
-    duration_cp = project.get_cp_duration(cp)
-    print(cp)
-    print(duration_cp)
+#
+# if __name__ == "__main__":
+#     Nodes = [
+#         Node(1, 3, []),
+#         Node(2, 4, [1]),
+#         Node(3, 2, [1]),
+#         Node(4, 5, [2]),
+#         Node(5, 1, [3]),
+#         Node(6, 2, [3]),
+#         Node(7, 4, [4, 5]),
+#         Node(8, 3, [6, 7])
+#     ]
+#     project = ProjectNetwork()
+#     for node in Nodes:
+#         project.add_node(node)
+#
+#     project.calculate_early_start_and_finish()
+#     project.calculate_late_start_and_finish()
+#     project.print()
+#     cp = project.find_critical_path()
+#     duration_cp = project.get_cp_duration(cp)
+#     print(cp)
+#     print(duration_cp)
