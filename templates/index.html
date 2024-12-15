@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица активности</title>
+    <link rel="stylesheet" href="static/index.css">
+    <script src="static/index.js" defer></script>
+
+
+</head>
+<body>
+
+<h1>Таблица активности</h1>
+
+<table id="activityTable">
+    <thead>
+        <tr>
+            <th>Номер активности</th>
+            <th>Длительность</th>
+            <th>Предшественники</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="text" placeholder="Введите номер" required></td>
+            <td><input type="number" placeholder="Введите длительность" required></td>
+            <td><input type="text" placeholder="Введите предшественников"></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="add-row">
+    <button id="addRowButton">Добавить строку</button>
+    <button id="calculateButton">Рассчитать критический путь</button>
+</div>
+</body>
+</html>
