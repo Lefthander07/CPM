@@ -2,38 +2,51 @@ from typing import List, Dict, Optional
 
 
 class Node:
-    def __init__(self, activity: int, durations: float, predecessors: tuple) -> None:
+    def __init__(self, activity: int, durations: float, predecessors: List) -> None:
         self.activity = activity
         self.durations = durations
         self.predecessors = predecessors
+        self.successors = []
         self.__EarlyStart = None
         self.__EarlyFinish = None
         self.__LateStart = None
         self.__LateFinish = None
 
+    def __str__(self):
+        return f"{self.activity}, {self.durations}, {self.predecessors}"
+
+
     def set_es(self, es: float) -> None:
         self.__EarlyStart = es
+
 
     def set_ef(self, ef: float) -> None:
         self.__EarlyFinish = ef
 
+
     def set_ls(self, ls: float) -> None:
         self.__LateStart = ls
+
 
     def set_lf(self, lf: float) -> None:
         self.__LateFinish = lf
 
+
     def get_es(self) -> float:
         return self.__EarlyStart
+
 
     def get_ef(self) -> float:
         return self.__EarlyFinish
 
+
     def get_ls(self) -> float:
         return self.__LateStart
 
+
     def get_lf(self) -> float:
         return self.__LateFinish
+
 
     EarlyStart = property(get_es, set_es)
     EarlyFinish = property(get_ef, set_ef)
@@ -45,6 +58,8 @@ class ProjectNetwork:
     def __init__(self):
         self.nodes: Dict[int, Node] = {}
         self.end_node_number = None
+        self.nodes[0] = Node(0, 0, [])
+
 
     def add_node(self, node: Node) -> None:
         if not isinstance(node, Node):
@@ -53,8 +68,15 @@ class ProjectNetwork:
         if node_number in self.nodes:
             raise ValueError(f"Node with number {node_number} already exists.")
 
+        if (len(node.predecessors) == 0):
+            node.predecessors.append(0)
+
+        for predecessor in node.predecessors:
+            self.nodes[predecessor].successors.append(node.activity)
+
         self.nodes[node_number] = node
         self.set_end_node(node_number)
+
 
     def set_end_node(self, end_node_number: int) -> None:
         if end_node_number not in self.nodes:
@@ -62,6 +84,13 @@ class ProjectNetwork:
         self.end_node_number = end_node_number
 
     def calculate_early_start_and_finish(self) -> None:
+        predecessors_for_fin = []
+        for node in self.nodes.values():
+            if len(node.successors) == 0:
+                predecessors_for_fin.append(node.activity)
+        if (len(predecessors_for_fin) > 0):
+            self.add_node(Node(list(self.nodes.keys())[-1]+1, 0, predecessors_for_fin))
+
         for node in self.nodes.values():
             if len(node.predecessors) == 0:
                 node.set_es(0)
@@ -121,12 +150,39 @@ class ProjectNetwork:
                 successors.append(other_node)
         return successors
 
+
     def find_critical_path(self) -> List[int]:
         critical_path = []
         for node in self.nodes.values():
-            if node.get_es() == node.get_ls():
+            if node.get_es() == node.get_ls() and node.durations > 0:
                 critical_path.append(node.activity)
         return critical_path
+
+
+    def find_all_paths(self, start, path=[]):
+        end = list(self.nodes.keys())[-1]
+        path = path + [start]
+        if start == end:
+            yield path
+        for node in self.nodes[start].successors:
+            if node not in path and (self.nodes[node].get_lf() - self.nodes[node].get_ef() == 0):
+                yield from self.find_all_paths(node, path)
+
+
+    def find_critical_paths(self, start):
+        all_paths = list(self.find_all_paths(start))
+        max_time = 0
+        critical_paths = []
+        for path in all_paths:
+            path_time = sum(self.nodes[task].durations for task in path)
+            if path_time > max_time:
+                max_time = path_time
+                critical_paths = [path]
+            elif path_time == max_time:
+                critical_paths.append(path)
+
+        return critical_paths, max_time
+
 
     def get_cp_duration(self, cp: List[int]) -> float:
         duration = 0
@@ -138,27 +194,3 @@ class ProjectNetwork:
         for node in self.nodes.values():
             print(
                 f"№{node.activity}, ES = {node.EarlyStart}, EF = {node.EarlyFinish}, LS = {node.LateStart}, LF={node.LateFinish}")
-
-#
-# if __name__ == "__main__":
-#     Nodes = [
-#         Node(1, 3, []),
-#         Node(2, 4, [1]),
-#         Node(3, 2, [1]),
-#         Node(4, 5, [2]),
-#         Node(5, 1, [3]),
-#         Node(6, 2, [3]),
-#         Node(7, 4, [4, 5]),
-#         Node(8, 3, [6, 7])
-#     ]
-#     project = ProjectNetwork()
-#     for node in Nodes:
-#         project.add_node(node)
-#
-#     project.calculate_early_start_and_finish()
-#     project.calculate_late_start_and_finish()
-#     project.print()
-#     cp = project.find_critical_path()
-#     duration_cp = project.get_cp_duration(cp)
-#     print(cp)
-#     print(duration_cp)

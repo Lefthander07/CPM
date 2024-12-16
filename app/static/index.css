@@ -38,3 +38,27 @@ body {
         button:hover {
             background-color: #45a049;
         }
+
+
+
+        .container {
+          margin-left: auto;
+  margin-right: auto;
+            width: 300px; /* Ширина контейнера */
+
+            border-radius: 15px; /* Закругление углов */
+            display: flex; /* Используем flexbox для центрирования */
+            flex-direction: column; /* Вертикальная ориентация */
+            align-items: center; /* Центрирование по горизонтали */
+            gap: 10px; /* Промежуток между внутренними div */
+        }
+
+        /* Стили для внутренних div */
+        .item {
+            padding: 10px; /* Отступы внутри внутреннего div */
+            background-color: #e7f1ff; /* Цвет фона внутренних div */
+            border-radius: 8px; /* Закругление углов внутренних div */
+            text-align: center; /* Центрирование текста */
+            width: 100%; /* Ширина внутренних div */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень для эффекта */
+        }
